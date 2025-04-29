@@ -61,4 +61,7 @@ public class HttpContextHandler implements HttpContextAccessors {
         }
     }
 
+    public HttpServletRequest getRequest() {
+        return request;
+    }
 }

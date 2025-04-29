@@ -2,6 +2,10 @@ package com.todoapp.infrastructure.config;
 
 import lombok.RequiredArgsConstructor;
 
+import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.EnableCaching;
@@ -28,6 +32,9 @@ public class RedisConfig {
 
     @Value("${REDIS_PORT}")
     private String REDIS_PORT;
+
+    private static final Integer[] TODO_CACHE_TTL_MINUTES = { 1, 1 };
+    private static final String[] TODO_CACHE_VALUES = { "todo_id", "my_todos" };
 
     @Bean
     public RedisConnectionFactory redisConnectionFactory() {
@@ -68,9 +75,21 @@ public class RedisConfig {
         redisCacheConfiguration.usePrefix(); // ? redis cache anahtarları ekler ,birbirleri ile ayrışmasını sağlar
                                              // ? unique id gibi bir şey
 
+        // ! Default ttl süresi
+        redisCacheConfiguration.entryTtl(Duration.ofMinutes(5));
+
+        Map<String, RedisCacheConfiguration> configs = new HashMap<>();
+
+        for (int i = 0; i < TODO_CACHE_TTL_MINUTES.length; i++) {
+            configs.put(TODO_CACHE_VALUES[i],
+                    redisCacheConfiguration.entryTtl(Duration.ofMinutes(TODO_CACHE_TTL_MINUTES[i])));
+        }
+
         // ! Redis bağlantı nesnesini kullanarak bir RedisCacheManager nesnesi
         // ! oluşturur.Ayarları yapılandırır
         return RedisCacheManager.RedisCacheManagerBuilder.fromConnectionFactory(redisConnectionFactory)
-                .cacheDefaults(redisCacheConfiguration).build();
+                .cacheDefaults(redisCacheConfiguration)
+                .withInitialCacheConfigurations(configs)
+                .build();
     }
 }

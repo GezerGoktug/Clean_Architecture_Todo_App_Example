@@ -59,11 +59,11 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     authenticationToken.setDetails(userDetails);
 
                     SecurityContextHolder.getContext().setAuthentication(authenticationToken);
-                    
+
                 }
             }
         } catch (ExpiredJwtException e) {
-            throw new BaseException(new ErrorMessage(e.getMessage(), MessageType.JWT_TOKEN_EXPIRED_DATE), 401);
+            throw new BaseException(new ErrorMessage(e.getMessage(), MessageType.TOKEN_EXPIRED_DATE), 401);
         } catch (Exception e) {
             throw new BaseException(new ErrorMessage(e.getMessage(), MessageType.GENERAL_ERROR), 500);
         }

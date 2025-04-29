@@ -2,7 +2,7 @@ package com.todoapp.application.exceptions;
 
 public enum MessageType {
     NO_RECORD_EXIST("Not found anything record"),
-    JWT_TOKEN_EXPIRED_DATE("Jwt token expired date"),
+    TOKEN_EXPIRED_DATE("Jwt token expired date"),
     USERNAME_NOT_FOUND("Username not found"),
     EMAIL_NOT_FOUND("Email not found"),
     EMAIL_ALREADY_USED("Email already used"),
@@ -12,6 +12,7 @@ public enum MessageType {
     DTO_CONVERT_ERROR("Dto converting error"),
     TODO_CREATE_ERROR("An error occuring when todo creating."),
     UNAUTHORIZED("Unauthorized"),
+    TOO_MANY_REQUESTS("Too many requests - try again later."),
     GENERAL_ERROR("Internal server error");
 
     private String message;

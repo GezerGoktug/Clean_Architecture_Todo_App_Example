@@ -22,8 +22,9 @@ public class GlobalExceptionHandler {
     // ! Normal hatalar için bu kullanılır
     @ExceptionHandler(value = { BaseException.class })
     public ResponseEntity<ApiError<?>> handleBaseException(BaseException ex, WebRequest request) {
-        return ResponseEntity.badRequest().body(ApiErrorFactory.createApiError(ex.getMessage(), ex.getStatusCode(),
-                request.getDescription(false).substring(4)));
+        return ResponseEntity.status(ex.getStatusCode())
+                .body(ApiErrorFactory.createApiError(ex.getMessage(), ex.getStatusCode(),
+                        request.getDescription(false).substring(4)));
     }
 
     // ! Domain katmanı validasyon hatalar için bu kullanılır

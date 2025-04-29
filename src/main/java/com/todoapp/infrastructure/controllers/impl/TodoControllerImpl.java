@@ -22,6 +22,7 @@ import com.todoapp.application.pagination.PageItem;
 import com.todoapp.application.pagination.PageableRequest;
 import com.todoapp.infrastructure.controllers.ITodoController;
 import com.todoapp.infrastructure.controllers.PageableEntity;
+import com.todoapp.infrastructure.controllers.RateLimiter;
 import com.todoapp.infrastructure.controllers.RestBaseController;
 import com.todoapp.infrastructure.controllers.RootEntity;
 import com.todoapp.infrastructure.dto.todo.CreateTodoRequest;
@@ -38,6 +39,9 @@ public class TodoControllerImpl extends RestBaseController implements ITodoContr
     @Autowired
     private TodoInputBoundary todoInput;
 
+    @Autowired
+    private RateLimiter rateLimiter;
+
     @Override
     @GetMapping("/list")
     @Cacheable(value = "my_todos", key = "#root.methodName", unless = "#result == null")
@@ -49,8 +53,9 @@ public class TodoControllerImpl extends RestBaseController implements ITodoContr
     @Override
     @GetMapping("/{todoId}")
     @Cacheable(cacheNames = "todo_id", key = "#root.methodName + #todoId", unless = "#result == null")
-    public RootEntity<ResponseDtoTodo> getTodoById(@PathVariable(name = "todoId", required = true) String todoId) {
-        return ok(todoInput.findTodoById(todoId), 200);
+    public RootEntity<ResponseDtoTodo> getTodoById(
+            @PathVariable(name = "todoId", required = true) String todoId) {
+        return ok(rateLimiter.limit(10, 20, () -> todoInput.findTodoById(todoId)), 200);
     }
 
     @Override
@@ -63,7 +68,8 @@ public class TodoControllerImpl extends RestBaseController implements ITodoContr
     @Override
     @DeleteMapping("/{todoId}")
     @CacheEvict(value = { "todo_id", "my_todos" }, allEntries = true)
-    public RootEntity<ResponseDtoDefault> removeTodo(@PathVariable(name = "todoId", required = true) String todoId) {
+    public RootEntity<ResponseDtoDefault> removeTodo(
+            @PathVariable(name = "todoId", required = true) String todoId) {
         return ok(todoInput.removeTodo(todoId), 200);
     }
 
