@@ -1,4 +1,4 @@
-package com.todoapp.infrastructure.config;
+package com.todoapp.infrastructure.controllers.rate_limiter;
 
 import java.time.Duration;
 

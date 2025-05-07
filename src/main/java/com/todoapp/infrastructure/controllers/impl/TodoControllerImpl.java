@@ -22,9 +22,9 @@ import com.todoapp.application.pagination.PageItem;
 import com.todoapp.application.pagination.PageableRequest;
 import com.todoapp.infrastructure.controllers.ITodoController;
 import com.todoapp.infrastructure.controllers.PageableEntity;
-import com.todoapp.infrastructure.controllers.RateLimiter;
 import com.todoapp.infrastructure.controllers.RestBaseController;
 import com.todoapp.infrastructure.controllers.RootEntity;
+import com.todoapp.infrastructure.controllers.rate_limiter.RateLimited;
 import com.todoapp.infrastructure.dto.todo.CreateTodoRequest;
 import com.todoapp.infrastructure.dto.todo.UpdateTodoRequest;
 import com.todoapp.infrastructure.util.DtoMapper;
@@ -39,12 +39,10 @@ public class TodoControllerImpl extends RestBaseController implements ITodoContr
     @Autowired
     private TodoInputBoundary todoInput;
 
-    @Autowired
-    private RateLimiter rateLimiter;
-
     @Override
     @GetMapping("/list")
-    @Cacheable(value = "my_todos", key = "#root.methodName + _page_ + #pageableRequest.pageNumber + _ + _ + #pageableRequest.pageSize", unless = "#result == null")
+    @RateLimited(maxRequests = 10, timeWindowSeconds = 20)
+    @Cacheable(value = "my_todos", key = "#root.methodName + '_page_' + #pageableRequest.pageNumber + '_size_' + #pageableRequest.pageSize", unless = "#result == null")
     public RootEntity<PageableEntity<ResponseDtoTodo>> findMyTodos(PageableRequest pageableRequest) {
         PageItem<ResponseDtoTodo> responseDtoTodo = todoInput.findMyTodos(pageableRequest);
         return ok(toPageableResponse(responseDtoTodo), 200);
@@ -52,10 +50,11 @@ public class TodoControllerImpl extends RestBaseController implements ITodoContr
 
     @Override
     @GetMapping("/{todoId}")
+    @RateLimited(maxRequests = 10, timeWindowSeconds = 20)
     @Cacheable(cacheNames = "todo_id", key = "#root.methodName + #todoId", unless = "#result == null")
     public RootEntity<ResponseDtoTodo> getTodoById(
             @PathVariable(name = "todoId", required = true) String todoId) {
-        return ok(rateLimiter.limit(10, 20, () -> todoInput.findTodoById(todoId)), 200);
+        return ok(todoInput.findTodoById(todoId), 200);
     }
 
     @Override
