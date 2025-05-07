@@ -29,6 +29,8 @@ public class SecurityConfig {
         private static final String REGISTER = "/api/auth/register";
         private static final String REFRESH_TOKEN = "/api/auth/refreshToken";
         private static final String AUTHENTICATE = "/api/auth/login";
+        private static final String ACTUATOR_HEALTH = "/actuator/health";
+        private static final String ACTUATOR_METRICS = "/actuator/metrics";
         private static final String OAUTH = "/oauth2/**";
         private static final String LOGIN = "/login";
 
@@ -41,10 +43,8 @@ public class SecurityConfig {
         @Autowired
         private AuthEntryPoint authEntryPoint;
 
-
-
         // ! daha önce jwt authentication filter da tanımladığımız her istekte jwt yi
-        //! kontrol edecek metodu burda hangi
+        // ! kontrol edecek metodu burda hangi
         // ! istekler için olacağını ayarlıyoruz.Session ayarlama
         @Bean
         public SecurityFilterChain filterChain(HttpSecurity http, ClientRegistrationRepository repo,
@@ -53,7 +53,8 @@ public class SecurityConfig {
                 http.csrf().disable()
                                 .authorizeRequests(request -> request
                                                 // .expressionHandler(webSecurityExpressionHandler())
-                                                .requestMatchers(REGISTER, AUTHENTICATE, REFRESH_TOKEN, OAUTH, LOGIN)
+                                                .requestMatchers(REGISTER, AUTHENTICATE, REFRESH_TOKEN, OAUTH, LOGIN,
+                                                                ACTUATOR_HEALTH, ACTUATOR_METRICS)
                                                 .permitAll()
                                                 .requestMatchers("/api/admin/**").hasAuthority("ADMIN")
                                                 .requestMatchers("/api/user/**").hasAuthority("USER")

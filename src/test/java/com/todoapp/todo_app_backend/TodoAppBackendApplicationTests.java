@@ -5,7 +5,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import com.todoapp.frameworks.starter.TodoAppBackendApplication;
 
-@SpringBootTest(classes = TodoAppBackendApplication.class)
+@SpringBootTest(classes = { TodoAppBackendApplication.class })
 class TodoAppBackendApplicationTests {
 
 	@Test

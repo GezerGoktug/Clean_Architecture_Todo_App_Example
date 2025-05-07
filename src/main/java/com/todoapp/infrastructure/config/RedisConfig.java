@@ -28,6 +28,7 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 public class RedisConfig {
 
     @Value("${DOCKER_REDIS_HOST}")
+    // @Value("${REDIS_HOST}")
     private String REDIS_HOST;
 
     @Value("${REDIS_PORT}")

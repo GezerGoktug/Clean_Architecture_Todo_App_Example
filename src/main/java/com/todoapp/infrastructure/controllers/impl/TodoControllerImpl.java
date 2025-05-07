@@ -44,7 +44,7 @@ public class TodoControllerImpl extends RestBaseController implements ITodoContr
 
     @Override
     @GetMapping("/list")
-    @Cacheable(value = "my_todos", key = "#root.methodName", unless = "#result == null")
+    @Cacheable(value = "my_todos", key = "#root.methodName + _page_ + #pageableRequest.pageNumber + _ + _ + #pageableRequest.pageSize", unless = "#result == null")
     public RootEntity<PageableEntity<ResponseDtoTodo>> findMyTodos(PageableRequest pageableRequest) {
         PageItem<ResponseDtoTodo> responseDtoTodo = todoInput.findMyTodos(pageableRequest);
         return ok(toPageableResponse(responseDtoTodo), 200);
